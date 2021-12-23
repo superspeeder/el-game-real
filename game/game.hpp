@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "Window.h"
+#include "Renderer.h"
 
 class Game {
 public:
@@ -14,4 +15,8 @@ public:
 
 private:
 	Window* window;
+	Renderer* renderer;
+
+	uint32_t testBuf;
+	uint32_t testVAO;
 };
