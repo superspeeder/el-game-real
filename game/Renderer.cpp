@@ -20,3 +20,13 @@ void Renderer::draw() {
 void Renderer::setBackgroundColor(const glm::vec4& color) {
     backgroundColor = color;
 }
+
+void Renderer::drawArrays(VertexArray* vao, PrimitiveMode mode, uint32_t count, uint32_t first) {
+    vao->bind();
+    glDrawArrays(static_cast<GLenum>(mode), first, count);
+}
+
+void Renderer::drawElements(VertexArray* vao, PrimitiveMode mode, uint32_t count, uint32_t first) {
+    vao->bind();
+    glDrawElements(static_cast<GLenum>(mode), count, GL_UNSIGNED_INT, (const void*)first);
+}
