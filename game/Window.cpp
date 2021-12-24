@@ -38,6 +38,7 @@ Window::Window(WindowSettings& settings) {
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings.debugContextEnabled);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
 	window = glfwCreateWindow(settings.size.x, settings.size.y, settings.title.c_str(), NULL, NULL);
 

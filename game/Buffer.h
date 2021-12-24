@@ -32,6 +32,7 @@ public:
     template<typename T>
     inline VertexBuffer(T* data, uint32_t size, BufferMode mode = BufferMode::StaticDraw) {
         glCreateBuffers(1, &handle);
+        bind();
         set_forcepush<T>(data,size,mode);
     };
 
@@ -70,7 +71,7 @@ public:
 
     float& getUnsafe(size_t idx);
 
-    inline const uint32_t& getHandle() const noexcept { return handle; };
+    inline const uint32_t& getHandle() { return handle; };
 
 
     inline void bind() const { glBindBuffer(GL_ARRAY_BUFFER, handle); };
@@ -93,6 +94,7 @@ public:
     template<typename T>
     inline IndexBuffer(T* data, uint32_t size, BufferMode mode = BufferMode::StaticDraw) {
         glCreateBuffers(1, &handle);
+        bind();
         set_forcepush<T>(data,size,mode);
     };
 
@@ -154,7 +156,7 @@ public:
 
     void elementBuffer(IndexBuffer* ibo);
 
-    inline const uint32_t& getHandle() const noexcept { return handle; };
+    inline const uint32_t& getHandle() { return handle; };
 
     inline void bind() const { glBindVertexArray(handle); };
 

@@ -2,16 +2,19 @@
 
 VertexBuffer::VertexBuffer(uint32_t size, BufferMode mode) {
     glCreateBuffers(1, &handle);
+    bind();
     set(size, mode);
 }
 
 VertexBuffer::VertexBuffer(float* data, uint32_t size, BufferMode mode) {
     glCreateBuffers(1, &handle);
+    bind();
     set(data, size, mode);
 }
 
 VertexBuffer::VertexBuffer(std::vector<float> data, BufferMode mode) {
     glCreateBuffers(1, &handle);
+    bind();
     set(data, mode);
 }
 
@@ -24,6 +27,7 @@ void VertexBuffer::set(uint32_t size, BufferMode mode) {
     } else {
         glNamedBufferData(handle, size * sizeof(float), nullptr, static_cast<GLenum>(mode));
         lastSize = size;
+        currentMode = mode;
     }
 }
 
@@ -36,6 +40,7 @@ void VertexBuffer::set(float* data, uint32_t size, BufferMode mode) {
     } else {
         glNamedBufferData(handle, size * sizeof(float), data, static_cast<GLenum>(mode));
         lastSize = size;
+        currentMode = mode;
     }
 }
 
@@ -47,7 +52,8 @@ void VertexBuffer::set(std::vector<float> data, BufferMode mode) {
     } else {
         glNamedBufferData(handle, data.size() * sizeof(float), data.data(), static_cast<GLenum>(mode));
         lastSize = vertices.size();
-    }    
+        currentMode = mode;
+    }
 }
 
 void VertexBuffer::set_forcepush(uint32_t size, BufferMode mode) {
@@ -55,6 +61,7 @@ void VertexBuffer::set_forcepush(uint32_t size, BufferMode mode) {
     memset(vertices.data(), 0, size * sizeof(float));
     glNamedBufferData(handle, size * sizeof(float), nullptr, static_cast<GLenum>(mode));
     lastSize = size;
+    currentMode = mode;
 }
 
 void VertexBuffer::set_forcepush(float* data, uint32_t size, BufferMode mode) {
@@ -62,12 +69,14 @@ void VertexBuffer::set_forcepush(float* data, uint32_t size, BufferMode mode) {
     memcpy(vertices.data(), data, size * sizeof(float));
     glNamedBufferData(handle, size * sizeof(float), data, static_cast<GLenum>(mode));
     lastSize = size;
+    currentMode = mode;
 }
 
 void VertexBuffer::set_forcepush(std::vector<float> data, BufferMode mode) {
     vertices = data;
     glNamedBufferData(handle, data.size() * sizeof(float), data.data(), static_cast<GLenum>(mode));
     lastSize = vertices.size();
+    currentMode = mode;
 }
 
 dirty_this<float> VertexBuffer::operator[](size_t idx) {
@@ -106,16 +115,19 @@ const std::vector<float>& VertexBuffer::getVertices() {
 
 IndexBuffer::IndexBuffer(uint32_t size, BufferMode mode) {
     glCreateBuffers(1, &handle);
+    bind();
     set(size, mode);
 }
 
 IndexBuffer::IndexBuffer(uint32_t* data, uint32_t size, BufferMode mode) {
     glCreateBuffers(1, &handle);
+    bind();
     set(data, size, mode);
 }
 
 IndexBuffer::IndexBuffer(std::vector<uint32_t> data, BufferMode mode) {
     glCreateBuffers(1, &handle);
+    bind();
     set(data, mode);
 }
 
@@ -128,6 +140,7 @@ void IndexBuffer::set(uint32_t size, BufferMode mode) {
     } else {
         glNamedBufferData(handle, size * sizeof(uint32_t), nullptr, static_cast<GLenum>(mode));
         lastSize = size;
+        currentMode = mode;
     }
 }
 
@@ -140,6 +153,7 @@ void IndexBuffer::set(uint32_t* data, uint32_t size, BufferMode mode) {
     } else {
         glNamedBufferData(handle, size * sizeof(uint32_t), data, static_cast<GLenum>(mode));
         lastSize = size;
+        currentMode = mode;
     }
 }
 
@@ -151,7 +165,8 @@ void IndexBuffer::set(std::vector<uint32_t> data, BufferMode mode) {
     } else {
         glNamedBufferData(handle, data.size() * sizeof(uint32_t), data.data(), static_cast<GLenum>(mode));
         lastSize = indices.size();
-    }    
+        currentMode = mode;
+    }
 }
 
 void IndexBuffer::set_forcepush(uint32_t size, BufferMode mode) {
@@ -159,6 +174,7 @@ void IndexBuffer::set_forcepush(uint32_t size, BufferMode mode) {
     memset(indices.data(), 0, size * sizeof(uint32_t));
     glNamedBufferData(handle, size * sizeof(uint32_t), nullptr, static_cast<GLenum>(mode));
     lastSize = size;
+    currentMode = mode;
 }
 
 void IndexBuffer::set_forcepush(uint32_t* data, uint32_t size, BufferMode mode) {
@@ -166,12 +182,14 @@ void IndexBuffer::set_forcepush(uint32_t* data, uint32_t size, BufferMode mode) 
     memcpy(indices.data(), data, size * sizeof(uint32_t));
     glNamedBufferData(handle, size * sizeof(uint32_t), data, static_cast<GLenum>(mode));
     lastSize = size;
+    currentMode = mode;
 }
 
 void IndexBuffer::set_forcepush(std::vector<uint32_t> data, BufferMode mode) {
     indices = data;
     glNamedBufferData(handle, data.size() * sizeof(uint32_t), data.data(), static_cast<GLenum>(mode));
     lastSize = indices.size();
+    currentMode = mode;
 }
 
 dirty_this<uint32_t> IndexBuffer::operator[](size_t idx) {
@@ -220,7 +238,7 @@ VertexBuffer::~VertexBuffer() {
 
 
 VertexArray::VertexArray() {
-    glGenVertexArrays(1, &handle);
+    glCreateVertexArrays(1, &handle);
 }
 
 VertexArray::~VertexArray() {

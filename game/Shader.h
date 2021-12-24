@@ -11,7 +11,7 @@ public:
     Shader(std::string file);
     ~Shader();
 
-    inline uint32_t getHandle() const noexcept { return handle; };  
+    inline uint32_t getHandle() { return handle; };  
 
 private:
 
@@ -25,7 +25,7 @@ public:
     ShaderProgram(std::initializer_list<std::string> files);
     ~ShaderProgram();
 
-    inline uint32_t getHandle() const noexcept { return handle; };  
+    inline uint32_t getHandle() { return handle; };  
 
     void use();
 

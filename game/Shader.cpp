@@ -13,7 +13,7 @@ Shader::Shader(std::string file) {
 	std::string type = stripWhitespace(l.substr(6));
 	uint32_t stype = sTypeFromName(type);
 
-	uint32_t handle = glCreateShader(stype);
+	handle = glCreateShader(stype);
 	const char* ssrc_czs = src.c_str();
 	glShaderSource(handle, 1, &ssrc_czs, nullptr);
 	
@@ -38,13 +38,13 @@ Shader::~Shader() {
 }
 
 ShaderProgram::ShaderProgram(std::initializer_list<std::string> files) {
-    std::vector<Shader> shaders;
+    std::vector<std::shared_ptr<Shader> > shaders;
 	for (std::string p : files) {
-		shaders.emplace_back(p);
+		shaders.push_back(std::make_shared<Shader>(p));
 	}
 	handle = glCreateProgram();
-	for (Shader& s : shaders) {
-		glAttachShader(handle, s.getHandle());
+	for (const auto& s : shaders) {
+		glAttachShader(handle, s->getHandle());
 	}
 
 	glLinkProgram(handle);
