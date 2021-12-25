@@ -1,26 +1,12 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-
+#include "fwd.h"
 #include "utils.hpp"
+
 #include <vector>
 
 
-enum class BufferMode : GLenum {
-    StaticDraw = GL_STATIC_DRAW,
-    StaticRead = GL_STATIC_READ,
-    StaticCopy = GL_STATIC_COPY,
 
-    DynamicDraw = GL_DYNAMIC_DRAW,
-    DynamicRead = GL_DYNAMIC_READ,
-    DynamicCopy = GL_DYNAMIC_COPY,
-
-    StreamDraw = GL_STREAM_DRAW,
-    StreamRead = GL_STREAM_READ,
-    StreamCopy = GL_STREAM_COPY
-};
 
 class VertexBuffer : public DirtyableType {
 public:
@@ -152,9 +138,10 @@ public:
     VertexArray();
     ~VertexArray();
 
-    void vertexBuffer(VertexBuffer* vbo, std::initializer_list<uint32_t> attributes);
+    void vertexBuffer(std::shared_ptr<VertexBuffer>& vbo, std::initializer_list<uint32_t> attributes);
+    void vertexBuffer(std::shared_ptr<VertexBuffer>& vbo, std::vector<uint32_t> attributes);
 
-    void elementBuffer(IndexBuffer* ibo);
+    void elementBuffer(std::shared_ptr<IndexBuffer>& ibo);
 
     inline const uint32_t& getHandle() { return handle; };
 

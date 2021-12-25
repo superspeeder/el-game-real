@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 find_package(glfw3 REQUIRED)
 find_package(glad REQUIRED)
 find_package(glm REQUIRED)
+find_package(RapidJSON REQUIRED)
+
 
 # Include sub-projects.
 add_subdirectory (game)

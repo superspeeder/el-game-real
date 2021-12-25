@@ -1,10 +1,9 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-
+#include "fwd.h"
 #include "utils.hpp"
+
+#include <unordered_map>
 
 class Shader {
 public:
@@ -25,164 +24,72 @@ public:
     ShaderProgram(std::initializer_list<std::string> files);
     ~ShaderProgram();
 
+    inline static std::shared_ptr<ShaderProgram> create(std::initializer_list<std::string> files) { return std::make_shared<ShaderProgram>(files); };
+
     inline uint32_t getHandle() { return handle; };  
 
     void use();
 
-    uint32_t getUniformLocation(std::string& uname);
+    uint32_t getUniformLocation(const std::string& uname);
+
+    void setInt(const std::string& name, int32_t x);
+    void setUInt(const std::string& name, uint32_t x);
+    void setFloat(const std::string& name, float x);
+    void setDouble(const std::string& name, double x);
+    void setBool(const std::string& name, bool x);
+
+    void setInt2(const std::string& name, int32_t x, int32_t y);
+    void setUInt2(const std::string& name, uint32_t x, uint32_t y);
+    void setFloat2(const std::string& name, float x, float y);
+    void setDouble2(const std::string& name, double x, double y);
+    void setBool2(const std::string& name, bool x, bool y);
+
+    void setInt2(const std::string& name, glm::ivec2 x);
+    void setUInt2(const std::string& name, glm::uvec2 x);
+    void setFloat2(const std::string& name, glm::fvec2 x);
+    void setDouble2(const std::string& name, glm::dvec2 x);
+    void setBool2(const std::string& name, glm::bvec2 x);
+
+    void setInt3(const std::string& name, int32_t x, int32_t y, int32_t z);
+    void setUInt3(const std::string& name, uint32_t x, uint32_t y, uint32_t z);
+    void setFloat3(const std::string& name, float x, float y, float z);
+    void setDouble3(const std::string& name, double x, double y, double z);
+    void setBool3(const std::string& name, bool x, bool y, bool z);
+
+    void setInt3(const std::string& name, glm::ivec3 x);
+    void setUInt3(const std::string& name, glm::uvec3 x);
+    void setFloat3(const std::string& name, glm::fvec3 x);
+    void setDouble3(const std::string& name, glm::dvec3 x);
+    void setBool3(const std::string& name, glm::bvec3 x);
+
+    void setInt4(const std::string& name, int32_t x, int32_t y, int32_t z, int32_t w);
+    void setUInt4(const std::string& name, uint32_t x, uint32_t y, uint32_t z, uint32_t w);
+    void setFloat4(const std::string& name, float x, float y, float z, float w);
+    void setDouble4(const std::string& name, double x, double y, double z, double w);
+    void setBool4(const std::string& name, bool x, bool y, bool z, bool w);
+
+    void setInt4(const std::string& name, glm::ivec4 x);
+    void setUInt4(const std::string& name, glm::uvec4 x);
+    void setFloat4(const std::string& name, glm::fvec4 x);
+    void setDouble4(const std::string& name, glm::dvec4 x);
+    void setBool4(const std::string& name, glm::bvec4 x);
+
+    void setMatrix2(const std::string& name, glm::mat2x2 m);
+    void setMatrix3(const std::string& name, glm::mat3x3 m);
+    void setMatrix4(const std::string& name, glm::mat4x4 m);
+
+    void setMatrix2x3(const std::string& name, glm::mat2x3 m);
+    void setMatrix3x2(const std::string& name, glm::mat3x2 m);
+
+    void setMatrix2x4(const std::string& name, glm::mat2x4 m);
+    void setMatrix4x2(const std::string& name, glm::mat4x2 m);
+
+    void setMatrix4x3(const std::string& name, glm::mat4x3 m);
+    void setMatrix3x4(const std::string& name, glm::mat3x4 m);
 
 private:
 
+    std::unordered_map<std::string, uint32_t> uniforms;
+    
     uint32_t handle;
 };
-
-/*
-
-struct ShaderProgram {
-	uint32_t handle;
-};
-
-std::string readFile(std::string name) {
-	std::ifstream f(name);
-	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-	return str;
-}
-
-constexpr std::string s2lower(std::string str) {
-	std::transform(str.begin(), str.end(), str.begin(),
-		[](unsigned char c) { return std::tolower(c); });
-	return str;
-}
-
-uint32_t sTypeFromName(std::string name) {
-	std::string ln = s2lower(name);
-	if (ln == "vertex") return GL_VERTEX_SHADER;
-	if (ln == "fragment") return GL_FRAGMENT_SHADER;
-	if (ln == "compute") return GL_COMPUTE_SHADER;
-	if (ln == "geometry") return GL_GEOMETRY_SHADER;
-	if (ln == "tess-control") return GL_TESS_CONTROL_SHADER;
-	if (ln == "tess-evaluation") return GL_TESS_EVALUATION_SHADER;
-	spdlog::error("Unknown shader type {}", name);
-	throw std::runtime_error("Unknown shader type " + name);
-}
-
-bool isWhiteSpace(char c) {
-	if (c == ' ' || c == '\n' || c == '\r' || c == '\t') return true;
-	return false;
-}
-
-std::string lStripNewlines(std::string text) {
-	size_t i = 0;
-	char c = text[0];
-	while (isWhiteSpace(c)) {
-		c = text[++i];
-		if (i >= text.size()) return "";
-	}
-
-	return text.substr(i);
-}
-
-std::tuple<std::string, std::string> splitAt(std::string text, size_t i) {
-	if (i == 0) return std::make_tuple("", text.substr(1));
-	if (i == std::string::npos) return std::make_tuple(text, "");
-	if (i + 1 == text.size()) return std::make_tuple(text.substr(0, i), "");
-	if (i + 1 > text.size()) return std::make_tuple(text, "");
-	return std::make_tuple(text.substr(0, i), text.substr(i + 1));
-}
-
-std::tuple<std::string, std::string> splitOnFirst(std::string text, char c) {
-	size_t i = text.find_first_of(c);
-	return splitAt(text, i);
-}
-
-std::tuple<std::string, std::string> splitFirstLine(std::string text) {
-	return splitOnFirst(text, '\n');
-}
-
-std::string stripWhitespace(std::string str) {
-	size_t start = 0;
-	char c = str[start];
-	while (isWhiteSpace(c)) {
-		c = str[++start];
-		if (start >= str.size()) return "";
-	}
-	std::string rem = str.substr(start);
-	size_t end = rem.size() - 1;
-	c = rem[end];
-	while (isWhiteSpace(c)) {
-		c = rem[--end];
-		if (end == 0 || end >= rem.size()) return "";
-	}
-
-	return rem.substr(0, end + 1);
-}
-
-uint32_t createShader(std::string path) {
-	std::string srcuf = lStripNewlines(readFile(path));
-//expect that the first non-blank line is in format
-//	#type <name>
-
-
-	std::string l, src;
-	std::tie(l, src) = splitFirstLine(srcuf);
-
-	if (!l.starts_with("#type ")) { spdlog::error("Failed to read shader file {}. Missing a type header.", path); throw std::runtime_error("Failed to read shader " + path); }
-
-	std::string type = stripWhitespace(l.substr(6));
-	uint32_t stype = sTypeFromName(type);
-
-	uint32_t sh = glCreateShader(stype);
-	const char* ssrc_czs = src.c_str();
-	glShaderSource(sh, 1, &ssrc_czs, nullptr);
-	
-	glCompileShader(sh);
-
-	int i;
-	glGetShaderiv(sh, GL_COMPILE_STATUS, &i);
-	if (!i) {
-		glGetShaderiv(sh, GL_INFO_LOG_LENGTH, &i);
-		char* ilog = new char[i];
-
-		glGetShaderInfoLog(sh, i, &i, ilog);
-		spdlog::error("Failed to compile shader {}!", path);
-		std::cerr << ilog;
-
-		delete[i] ilog;
-		throw std::runtime_error("Failed to compile shader " + path);
-	}
-
-	return sh;
-}
-
-ShaderProgram* createShaderProgram(std::initializer_list<std::string> files) {
-	std::vector<uint32_t> shaders;
-	for (std::string p : files) {
-		shaders.push_back(createShader(p));
-	}
-	uint32_t pr = glCreateProgram();
-	for (uint32_t s : shaders) {
-		glAttachShader(pr, s);
-	}
-
-	glLinkProgram(pr);
-	int i;
-	glGetProgramiv(pr, GL_LINK_STATUS, &i);
-	if (!i) {
-		glGetProgramiv(pr, GL_INFO_LOG_LENGTH, &i);
-		char* ilog = new char[i];
-
-		glGetProgramInfoLog(pr, i, &i, ilog);
-		spdlog::error("Failed to link program");
-		std::cerr << ilog;
-
-		delete[i] ilog;
-		throw std::runtime_error("Failed to link program");
-	}
-	
-	for (uint32_t s : shaders) {
-		glDeleteShader(s);
-	}
-
-	return new ShaderProgram{pr};
-}
-*/

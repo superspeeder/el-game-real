@@ -246,7 +246,7 @@ VertexArray::~VertexArray() {
 }
 
 
-void VertexArray::vertexBuffer(VertexBuffer* vbo, std::initializer_list<uint32_t> attributes) {
+void VertexArray::vertexBuffer(std::shared_ptr<VertexBuffer>& vbo, std::initializer_list<uint32_t> attributes) {
     uint32_t bid = nextBinding++;
     uint32_t stride = 0;
     for (uint32_t i : attributes) {
@@ -260,6 +260,20 @@ void VertexArray::vertexBuffer(VertexBuffer* vbo, std::initializer_list<uint32_t
     glVertexArrayVertexBuffer(handle, bid, vbo->getHandle(), 0, stride * sizeof(float));
 }
 
-void VertexArray::elementBuffer(IndexBuffer* ibo) {
+void VertexArray::vertexBuffer(std::shared_ptr<VertexBuffer>& vbo, std::vector<uint32_t> attributes) {
+    uint32_t bid = nextBinding++;
+    uint32_t stride = 0;
+    for (uint32_t i : attributes) {
+        uint32_t aid = nextAttrib++;
+        glVertexArrayAttribBinding(handle, aid, bid);
+        glVertexArrayAttribFormat(handle, aid, i, GL_FLOAT, false, stride * sizeof(float));
+        stride += i;
+        glEnableVertexArrayAttrib(handle, aid);
+    }
+
+    glVertexArrayVertexBuffer(handle, bid, vbo->getHandle(), 0, stride * sizeof(float));
+}
+
+void VertexArray::elementBuffer(std::shared_ptr<IndexBuffer>& ibo) {
     glVertexArrayElementBuffer(handle, ibo->getHandle());
 }

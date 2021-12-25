@@ -33,7 +33,16 @@ WindowSettings& WindowSettings::debugContext(bool dc) {
 	return *this;
 }
 
-Window::Window(WindowSettings& settings) {
+void updateViewport(glm::ivec2 newVp) {
+	glViewport(0, 0, newVp.x, newVp.y);
+}
+
+void onWindowFramebufferResize(GLFWwindow* win, int x, int y) {
+	updateViewport({ x, y });
+}
+
+
+Window::Window(WindowSettings& settings_) : settings{ settings_ } {
 	glfwDefaultWindowHints();
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings.debugContextEnabled);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -44,14 +53,20 @@ Window::Window(WindowSettings& settings) {
 
 	glfwMakeContextCurrent(window);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+	glfwSetFramebufferSizeCallback(window, onWindowFramebufferResize);
 }
 
-bool Window::isOpen() {
+bool Window::isOpen() const {
 	return !glfwWindowShouldClose(window);
 }
 
 void Window::swap() {
 	glfwSwapBuffers(window);
+}
+
+bool Window::isDebug() const noexcept {
+	return settings.debugContextEnabled;
 }
 
 Window::~Window() {
