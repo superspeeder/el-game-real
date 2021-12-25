@@ -39,6 +39,22 @@ patches
 
 */
 
+PrimitiveMode primitiveFromString(const std::string& str) {
+	if (str == "points") return PrimitiveMode::Points;
+	if (str == "lines") return PrimitiveMode::Lines;
+	if (str == "line-loop") return PrimitiveMode::LineLoop;
+	if (str == "line-strip") return PrimitiveMode::LineStrip;
+	if (str == "lines-adjacency") return PrimitiveMode::LinesAdjacency;
+	if (str == "line-strip-adjacency") return PrimitiveMode::LineStripAdjacency;
+	if (str == "triangles") return PrimitiveMode::Triangles;
+	if (str == "triangles-adjacency") return PrimitiveMode::TrianglesAdjacency;
+	if (str == "triangle-strip") return PrimitiveMode::TriangleStrip;
+	if (str == "triangle-strip-adjacency") return PrimitiveMode::TriangleStripAdjacency;
+	if (str == "triangle-fan") return PrimitiveMode::TriangleFan;
+	if (str == "patches") return PrimitiveMode::Patches;
+	throw std::runtime_error("Unknown primitive '" + str + '\'');
+}
+
 Mesh::Mesh(const rapidjson::Value& val) {
 	if (!val.IsObject()) throw std::runtime_error("Cannot read json object for mesh.");
 	auto obj = val.GetObject();
@@ -85,6 +101,14 @@ Mesh::Mesh(const rapidjson::Value& val) {
 	vao = std::make_shared<VertexArray>();
 	vao->elementBuffer(ibo);
 	vao->vertexBuffer(vbo, attributes);
+
+	auto prim_i = obj.FindMember("primitive");
+	if (prim_i == obj.end()) throw std::runtime_error("Cannot find a \"primitive\" member in mesh json");
+
+	auto& prim_v = prim_i->value;
+	if (!prim_v.IsString()) throw std::runtime_error("\"primitive\" member of mesh json is not a string");
+
+	primitive = primitiveFromString(prim_v.GetString());
 }
 
 Mesh::Mesh(const rapidjson::Document& doc) {
@@ -188,3 +212,5 @@ Mesh::Mesh(const std::string& path) {
 	vao->elementBuffer(ibo);
 	vao->vertexBuffer(vbo, attributes);
 }
+
+
