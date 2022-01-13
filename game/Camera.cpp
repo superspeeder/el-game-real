@@ -10,6 +10,11 @@ void Camera::setPosition(glm::vec2 pos) {
 	dirty = true;
 }
 
+void Camera::setBounds(glm::vec4 bounds, float zMin, float zMax) {
+	projection = glm::ortho(bounds.x, bounds.z, bounds.y, bounds.w, zMin, zMax);
+	dirty = true;
+}
+
 glm::vec2 Camera::getPos() {
 	return pos;
 }
@@ -23,3 +28,9 @@ glm::mat4 Camera::getViewProjection() {
 
 	return vp;
 }
+
+void Camera::move(glm::vec2 d) {
+	pos -= d;
+	dirty = true;
+}
+

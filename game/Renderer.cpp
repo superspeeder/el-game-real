@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Texture.h"
+#include "Camera.h"
 
 Renderer::Renderer() {
 
@@ -79,6 +80,9 @@ void Renderer::preRender() {
 
     glUniform2uiv(utss_l, kMaximumTextures, reinterpret_cast<uint32_t*>(texSizes.data()));
     glUniform1iv(utxs_l, kMaximumTextures, texs.data());
+
+    glm::mat4 vp = camera->getViewProjection();
+    currentShaderProgram->setMatrix4("uViewProjection", vp);
 }
 
 void Renderer::queue(const RendererDraw& drawC) {
@@ -115,4 +119,12 @@ void Renderer::setTexture(const std::shared_ptr<Texture>& tex, uint32_t unit) {
     }
 
     currentTextures[unit] = tex;
+}
+
+void Renderer::setCamera(const std::shared_ptr<Camera>& cam) {
+    camera = cam;
+}
+
+const std::shared_ptr<Camera>& Renderer::getCamera() {
+    return camera;
 }

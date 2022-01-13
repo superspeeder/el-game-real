@@ -4,10 +4,10 @@
 
 
 namespace spritebatch_constants {
-	constexpr uint32_t kMaxBufferSize = memoryconvert::mb2b(8);
-	constexpr uint32_t kVertexSize = 4;
+	constexpr uint32_t kMaxBufferSize = memoryconvert::mb2b(24);
+	constexpr uint32_t kVertexSize = 5;
 	constexpr uint32_t kMaxVertices = kMaxBufferSize / (kVertexSize * sizeof(float));
-	constexpr uint32_t kMaxQuads = kMaxVertices * 4;
+	constexpr uint32_t kMaxQuads = kMaxVertices / 4;
 	constexpr uint32_t kIndicesPerQuad = 6;
 	constexpr PrimitiveMode kPrimitiveMode = PrimitiveMode::Triangles;
 }
@@ -29,9 +29,9 @@ public:
 	void end();
 
 	// texCoords is {u1,v1,u2,v2}
-	void batch(glm::vec2 pos, glm::vec2 size, glm::vec4 texCoords);
+	void batch(glm::vec2 pos, glm::vec2 size, glm::vec4 texCoords, float z = 1.0f);
 	// quad is {x,y,w,h}
-	void batch(glm::vec4 quad, glm::vec4 texCoords);
+	void batch(glm::vec4 quad, glm::vec4 texCoords, float z = 1.0f);
 
 private:
 

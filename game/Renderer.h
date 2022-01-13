@@ -44,6 +44,9 @@ public:
 
     void setTexture(const std::shared_ptr<Texture>& tex, uint32_t unit = 0);
 
+    void setCamera(const std::shared_ptr<Camera>& cam);
+    const std::shared_ptr<Camera>& getCamera();
+
 private:
     
     void renderCall(const RendererDraw& drawC);
@@ -56,6 +59,8 @@ private:
     std::queue<RendererDraw> draws;
 
     std::array<std::shared_ptr<Texture>, kMaximumTextures> currentTextures;
+
+    std::shared_ptr<Camera> camera;
     
 };
 

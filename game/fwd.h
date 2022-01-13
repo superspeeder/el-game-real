@@ -1,4 +1,5 @@
 #pragma once
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -37,6 +38,10 @@ class Texture;
 struct TextureParams;
 
 class Renderable;
+
+class Camera;
+
+class Game;
 
 // Enums
 enum class PrimitiveMode : GLenum {

@@ -1,12 +1,39 @@
 ﻿#include "game.hpp"
 
+using namespace game_constants;
+
+void Game::onKey(KeyPressEvent* evt) {
+	if (evt->getAction() == GLFW_PRESS) {
+		if (evt->getKey() == GLFW_KEY_SPACE) {
+			switchCameraMode();
+		}
+	}
+}
+
+void Game::onFB(WindowFramebufferResizeEvent* evt) {
+	camera->setBounds({ -evt->getSize().x / 2, -evt->getSize().y / 2, evt->getSize().x / 2, evt->getSize().y / 2 });
+}
+
+void Game::switchCameraMode() {
+	if (cameraMode == CameraMode::Freecam) cameraMode = CameraMode::FollowPlayer;
+	else cameraMode = CameraMode::Freecam;
+}
+
 Game::Game() {
+	appEventManager = std::make_shared<OnDemandEventManager>();
+	eventManager = std::make_shared<AsyncEventManager>();
+	eventLayer = eventManager->createLayer(1);
+	appEventLayer = appEventManager->createLayer(1);
+
+	eventLayer->addListener<KeyPressEvent>(&Game::onKey, this);
+
+
 	WindowSettings settings{};
-	settings.size = { 800, 800 };
+	settings.size = { 1920, 1080 };
 	settings.debugContext();
 	settings.title = "Test Window";
 
-	window = std::make_shared<Window>(settings);
+	window = std::make_shared<Window>(this, settings);
 }
 
 Game::~Game() {
@@ -19,7 +46,11 @@ void Game::run() {
 
 	spdlog::info("Hello!");
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	SpriteBatch::init();
+
 
 	init();
 
@@ -34,6 +65,8 @@ void Game::run() {
 	}
 
 	SpriteBatch::cleanup();
+
+	eventManager->end_after_done();
 }
 
 void Game::init() {
@@ -51,19 +84,52 @@ void Game::init() {
 
 	texture = std::make_shared<Texture>("textures/texture.png");
 
+	camera = std::make_shared<Camera>(glm::vec4{ -960, -540, 960, 540 });
+
+
+	renderer->setCamera(camera);
+
 	drawF.mesh = mesh;
 	drawF.shader = prog;
 	drawF.textures[0] = texture;
+
+	spdlog::info("tsize: {},{}", texture->getTextureSize().x, texture->getTextureSize().y);
 }
 
+
+void Game::freecamUpdate() {
+	if (window->getKey(GLFW_KEY_A)) {
+		camera->move({ -kFreeCameraSpeed, 0 });
+	}
+	if (window->getKey(GLFW_KEY_D)) {
+		camera->move({ kFreeCameraSpeed, 0 });
+	}
+	if (window->getKey(GLFW_KEY_W)) {
+		camera->move({ 0, kFreeCameraSpeed });
+	}
+	if (window->getKey(GLFW_KEY_S)) {
+		camera->move({ 0, -kFreeCameraSpeed });
+	}
+}
+
+constexpr float ts = 16.f;
 
 void Game::draw() {
 //	drawF.foregroundColor = gradient(glfwGetTime());
 
+	switch (cameraMode) {
+	case CameraMode::Freecam: freecamUpdate(); break;
+	}
+
 	spriteBatch->begin();
-	spriteBatch->batch({ -1,0,0.5,0.5 }, { 0,0,128,128 });
-	spriteBatch->batch({ 0,0,0.5,0.5 }, { 0,0,128,128 });
-	spriteBatch->batch({ 0,-1,0.5,0.5 }, { 0,0,128,128 });
+
+	for (int x = 0; x < 128; x++) {
+		for (int y = 0; y < 128; y++) {
+			spriteBatch->batch({ x * ts, y * ts, ts, ts }, { 16,16,16,16 });
+		}
+	}
+
+
 	spriteBatch->end();
 
 	renderer->queue(drawF);

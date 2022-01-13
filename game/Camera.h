@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace camera_constants {
-	constexpr float kZMin = 000.01f;
+	constexpr float kZMin = 000.00f;
 	constexpr float kZMax = 100.00f;
 }
 
@@ -21,10 +21,14 @@ public:
 
 	void setPosition(glm::vec2 pos);
 
+	void setBounds(glm::vec4 bounds, float zMin = camera_constants::kZMin, float zMax = camera_constants::kZMax);
+
 	glm::vec2 getPos();
 
 
 	glm::mat4 getViewProjection();
+
+	void move(glm::vec2 d);
 
 private:
 

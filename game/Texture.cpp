@@ -11,9 +11,12 @@ Texture::Texture(glm::uvec2 textureSize_, const TextureParams& params) : texture
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, params.magFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, params.wrapS);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, params.wrapT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, params.maxMipMapLevel);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, params.internalFormat, textureSize.x, textureSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
+	if (params.genMipMaps) {
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 
 }
 
@@ -39,6 +42,7 @@ Texture::Texture(const std::string& textureFile, const TextureParams& params) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, params.magFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, params.wrapS);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, params.wrapT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, params.maxMipMapLevel);
 
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(textureFile.c_str(), &width, &height, &nrChannels, 0);

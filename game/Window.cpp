@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "game.hpp"
 
 WindowSettings& WindowSettings::setSize(glm::ivec2 size) {
 	this->size = size;
@@ -41,8 +42,16 @@ void onWindowFramebufferResize(GLFWwindow* win, int x, int y) {
 	updateViewport({ x, y });
 }
 
+void onKey(GLFWwindow* win_, int key, int scancode, int action, int mods) {
+	Window* win = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win_));
+	win->getGame()->getEventManager()->post(new KeyPressEvent(win, key, action, mods));
+}
 
-Window::Window(WindowSettings& settings_) : settings{ settings_ } {
+Game* Window::getGame() const {
+	return game;
+}
+
+Window::Window(Game* game_, WindowSettings& settings_) : game(game_), settings(settings_) {
 	glfwDefaultWindowHints();
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings.debugContextEnabled);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -54,7 +63,11 @@ Window::Window(WindowSettings& settings_) : settings{ settings_ } {
 	glfwMakeContextCurrent(window);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
+	glfwSetWindowUserPointer(window, this);
+
 	glfwSetFramebufferSizeCallback(window, onWindowFramebufferResize);
+
+	glfwSetKeyCallback(window, onKey);
 }
 
 bool Window::isOpen() const {
@@ -72,3 +85,8 @@ bool Window::isDebug() const noexcept {
 Window::~Window() {
 	glfwDestroyWindow(window);
 }
+
+bool Window::getKey(int k) {
+	return glfwGetKey(window, k);
+}
+

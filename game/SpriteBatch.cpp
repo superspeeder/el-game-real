@@ -34,11 +34,11 @@ void SpriteBatch::cleanup() {
 
 SpriteBatch::SpriteBatch() {
 
-	vbo = std::make_shared<VertexBuffer>(kMaxVertices * kVertexSize, BufferMode::DynamicDraw);
+	vbo = std::make_shared<VertexBuffer>(kMaxQuads * 4 * kVertexSize, BufferMode::DynamicDraw);
 
 	vao = std::make_shared<VertexArray>();
 	vao->elementBuffer(ibo->getHandle());
-	vao->vertexBuffer(vbo, { 2, 2 });
+	vao->vertexBuffer(vbo, { 3, 2 });
 
 	mesh = std::make_shared<Mesh>(vbo, ibo, vao, kPrimitiveMode);
 }
@@ -69,7 +69,7 @@ void SpriteBatch::begin() {
 }
 
 // texCoords is {u1,v1,u2,v2}
-void SpriteBatch::batch(glm::vec2 pos, glm::vec2 size, glm::vec4 texCoords) {
+void SpriteBatch::batch(glm::vec2 pos, glm::vec2 size, glm::vec4 texCoords, float z) {
 	if (currentQuad >= kMaxQuads) {
 		spdlog::warn("SpriteBatch Full, cannot batch more quads. Consider optimizing your renderer dumbass.");
 		return;
@@ -79,20 +79,20 @@ void SpriteBatch::batch(glm::vec2 pos, glm::vec2 size, glm::vec4 texCoords) {
 
 	std::array<float, kVertexSize * 4> qvs{
 		// v1
-		pos.x, pos.y,
-		texCoords.x, texCoords.y,
+		pos.x, pos.y, z,
+		texCoords.x + 0.0078125f, texCoords.y + 0.0078125f,
 
 		// v2
-		pos.x + size.x, pos.y,
-		texCoords.z, texCoords.y,
+		pos.x + size.x, pos.y, z,
+		texCoords.x + texCoords.z - 0.0078125f, texCoords.y + 0.0078125f,
 
 		// v3
-		pos.x + size.x, pos.y + size.y,
-		texCoords.z, texCoords.w,
+		pos.x + size.x, pos.y + size.y, z,
+		texCoords.x + texCoords.z - 0.0078125f, texCoords.y + texCoords.w - 0.0078125f,
 
 		// v4
-		pos.x, pos.y + size.y,
-		texCoords.x, texCoords.z
+		pos.x, pos.y + size.y, z,
+		texCoords.x + 0.0078125f, texCoords.y + texCoords.w - 0.0078125f
 	};
 
 	vbo->setRegion(curIndex, qvs);
@@ -100,7 +100,7 @@ void SpriteBatch::batch(glm::vec2 pos, glm::vec2 size, glm::vec4 texCoords) {
 }
 
 // quad is {x,y,w,h}
-void SpriteBatch::batch(glm::vec4 quad, glm::vec4 texCoords) {
-	batch({ quad.x, quad.y }, { quad.z, quad.w }, texCoords);
+void SpriteBatch::batch(glm::vec4 quad, glm::vec4 texCoords, float z) {
+	batch({ quad.x, quad.y }, { quad.z, quad.w }, texCoords, z);
 }
 

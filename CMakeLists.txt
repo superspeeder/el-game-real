@@ -13,7 +13,10 @@ find_package(glad REQUIRED)
 find_package(glm REQUIRED)
 find_package(RapidJSON REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(freetype REQUIRED)
 
 
 # Include sub-projects.
 add_subdirectory (game)
+
+
