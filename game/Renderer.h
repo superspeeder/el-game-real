@@ -9,13 +9,19 @@
 
 #include <variant>
 #include <queue>
+#include <array>
+
+constexpr size_t kMaximumTextures = 32;
 
 struct RendererDraw {
     std::shared_ptr<Mesh> mesh;
 
     std::shared_ptr<ShaderProgram> shader;
     glm::vec4 foregroundColor = colors::WHITE;
+
+    std::array<std::shared_ptr<Texture>, kMaximumTextures> textures;
 };
+
 
 class Renderer {
 public:
@@ -34,7 +40,9 @@ public:
 
     void queue(const RendererDraw& drawC);
 
-    void drawMesh(const std::shared_ptr<Mesh>& mesh)
+    void drawMesh(const std::shared_ptr<Mesh>& mesh);
+
+    void setTexture(const std::shared_ptr<Texture>& tex, uint32_t unit = 0);
 
 private:
     
@@ -46,6 +54,8 @@ private:
 
     dirtyable<glm::vec4> backgroundColor = colors::BLACK;
     std::queue<RendererDraw> draws;
+
+    std::array<std::shared_ptr<Texture>, kMaximumTextures> currentTextures;
     
 };
 

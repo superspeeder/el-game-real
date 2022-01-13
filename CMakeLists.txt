@@ -12,6 +12,7 @@ find_package(glfw3 REQUIRED)
 find_package(glad REQUIRED)
 find_package(glm REQUIRED)
 find_package(RapidJSON REQUIRED)
+find_package(spdlog REQUIRED)
 
 
 # Include sub-projects.

@@ -5,6 +5,8 @@
 #include "Window.h"
 #include "Renderer.h"
 #include "Shader.h"
+#include "Texture.h"
+#include "SpriteBatch.h"
 
 #include <iostream>
 
@@ -20,14 +22,13 @@ public:
 private:
 	std::shared_ptr<Window> window;
 	std::shared_ptr<Renderer> renderer;
-	std::shared_ptr<VertexBuffer> vbo;
-	std::shared_ptr<VertexArray> vao;
 	std::shared_ptr<ShaderProgram> prog;
+	std::shared_ptr<Mesh> mesh;
+	std::shared_ptr<Texture> texture;
+	std::shared_ptr<SpriteBatch> spriteBatch;
+	
 	RendererDraw drawF;
 
-
-	uint32_t testBuf;
-	uint32_t testVAO;
 
 
 	glm::vec4 colorA = glm::vec4(1.f, 1.f, 0.f, 1.f);

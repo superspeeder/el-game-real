@@ -17,6 +17,10 @@ void Game::run() {
 		setupDebug();
 	}
 
+	spdlog::info("Hello!");
+
+	SpriteBatch::init();
+
 	init();
 
 	glfwSetTime(0);
@@ -28,6 +32,8 @@ void Game::run() {
 
 		window->swap();
 	}
+
+	SpriteBatch::cleanup();
 }
 
 void Game::init() {
@@ -36,28 +42,32 @@ void Game::init() {
 
 	renderer->setBackgroundColor(colors::CYAN);
 
-	std::vector<float> vdata = {0,0, 1,0, 1,1, 0,1};
-
-    vbo = std::make_shared<VertexBuffer>(vdata);
-    vbo->bind();
-    vao = std::make_shared<VertexArray>();
-    vao->vertexBuffer(vbo, {2});
-
 	prog = ShaderProgram::create({ "shaders/main.frag.glsl", "shaders/main.vert.glsl" });
 
-//	drawF.drawData.renderMode = RendererMode::Arrays;
-//	drawF.drawData.primitive = PrimitiveMode::TriangleFan;
-//	drawF.drawData.vao = vao;
-//	drawF.drawData.first = 0;
-//	drawF.drawData.count = 4;
+	spriteBatch = std::make_shared<SpriteBatch>();
 
+//	mesh = std::make_shared<Mesh>("meshs/quad.json");
+	mesh = spriteBatch->getMesh();
+
+	texture = std::make_shared<Texture>("textures/texture.png");
+
+	drawF.mesh = mesh;
 	drawF.shader = prog;
+	drawF.textures[0] = texture;
 }
 
 
 void Game::draw() {
-	drawF.foregroundColor = gradient(glfwGetTime());
+//	drawF.foregroundColor = gradient(glfwGetTime());
+
+	spriteBatch->begin();
+	spriteBatch->batch({ -1,0,0.5,0.5 }, { 0,0,128,128 });
+	spriteBatch->batch({ 0,0,0.5,0.5 }, { 0,0,128,128 });
+	spriteBatch->batch({ 0,-1,0.5,0.5 }, { 0,0,128,128 });
+	spriteBatch->end();
+
 	renderer->queue(drawF);
+
 
 	renderer->draw();
 }

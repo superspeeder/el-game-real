@@ -204,3 +204,23 @@ struct SimpleFunctionalGradient {
 		return glm::mix(colorA, colorB, positionCalculator(x));
 	};
 };
+
+namespace constmath {
+	template <typename T>
+	constexpr T ipow(T num, unsigned int pow) {
+		return (pow >= sizeof(unsigned int) * 8) ? 0 :
+			pow == 0 ? 1 : num * ipow(num, pow - 1);
+	}
+}
+
+namespace memoryconvert {
+	constexpr uint32_t b1024p(uint32_t n) { return constmath::ipow(1024U, n); };
+
+	constexpr uint32_t kb2b(uint32_t n) { return n * b1024p(1); };
+	constexpr uint32_t mb2b(uint32_t n) { return n * b1024p(2); };
+	constexpr uint32_t gb2b(uint32_t n) { return n * b1024p(3); };
+
+	constexpr float b2kb(uint32_t n) { return (float)n / (float)b1024p(1); };
+	constexpr float b2mb(uint32_t n) { return (float)n / (float)b1024p(2); };
+	constexpr float b2gb(uint32_t n) { return (float)n / (float)b1024p(3); };
+}

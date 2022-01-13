@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
 
 
 // Forwards
@@ -31,6 +32,11 @@ class ShaderProgram;
 
 class Window;
 struct WindowSettings;
+
+class Texture;
+struct TextureParams;
+
+class Renderable;
 
 // Enums
 enum class PrimitiveMode : GLenum {
@@ -80,5 +86,3 @@ namespace colors {
     constexpr glm::vec4 MAGENTA{ 1,0,1,1 };
     constexpr glm::vec4 CYAN{ 0,1,1,1 };
 }
-
-

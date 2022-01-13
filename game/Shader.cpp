@@ -9,7 +9,10 @@ Shader::Shader(std::string file) {
 	std::string l, src;
 	std::tie(l, src) = splitFirstLine(srcuf);
 
-	if (!l.starts_with("#type ")) { throw std::runtime_error("Failed to read shader " + file); }
+	if (!l.starts_with("#type ")) {
+		spdlog::critical("Failed to read shader file '{}'", file);
+		throw std::runtime_error("Failed to read shader " + file);
+	}
 
 	std::string type = stripWhitespace(l.substr(6));
 	uint32_t stype = sTypeFromName(type);
@@ -27,9 +30,10 @@ Shader::Shader(std::string file) {
 		char* ilog = new char[i];
 
 		glGetShaderInfoLog(handle, i, &i, ilog);
-		std::cerr << ilog;
+		spdlog::critical(ilog);
 
 		delete[i] ilog;
+		spdlog::critical("Failed to compile shader file '{}'", file);
 		throw std::runtime_error("Failed to compile shader " + file);
 	}
 }
@@ -56,9 +60,10 @@ ShaderProgram::ShaderProgram(std::initializer_list<std::string> files) {
 		char* ilog = new char[i];
 
 		glGetProgramInfoLog(handle, i, &i, ilog);
-		std::cerr << ilog;
+		spdlog::critical(ilog);
 
 		delete[i] ilog;
+		spdlog::critical("Failed to link program");
 		throw std::runtime_error("Failed to link program");
 	}
 }

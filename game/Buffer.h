@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include <array>
 
 
 
@@ -50,7 +51,7 @@ public:
 
     void resize(size_t newSize);
 
-    uint32_t getSize();
+    inline uint32_t getSize() const noexcept { return vertices.size(); };
     const std::vector<float>& getVertices();
 
     dirty_this<float> operator[](size_t idx);
@@ -61,6 +62,12 @@ public:
 
 
     inline void bind() const { glBindBuffer(GL_ARRAY_BUFFER, handle); };
+
+    template<size_t C>
+    inline void setRegion(size_t idx, std::array<float, C> data) {
+        memcpy(&vertices[idx], data.data(), C * sizeof(float));
+        markDirty();
+    };
 
 private:
     uint32_t handle;
@@ -112,7 +119,7 @@ public:
 
     void resize(size_t newSize);
 
-    uint32_t getSize();
+    inline uint32_t getSize() const noexcept { return indices.size(); };
     const std::vector<uint32_t>& getIndices();
 
     dirty_this<uint32_t> operator[](size_t idx);
@@ -142,6 +149,7 @@ public:
     void vertexBuffer(std::shared_ptr<VertexBuffer>& vbo, std::vector<uint32_t> attributes);
 
     void elementBuffer(std::shared_ptr<IndexBuffer>& ibo);
+    void elementBuffer(uint32_t iboHandle);
 
     inline const uint32_t& getHandle() { return handle; };
 

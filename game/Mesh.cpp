@@ -157,6 +157,14 @@ Mesh::Mesh(const rapidjson::Document& doc) {
 	vao = std::make_shared<VertexArray>();
 	vao->elementBuffer(ibo);
 	vao->vertexBuffer(vbo, attributes);
+
+	auto prim_i = obj.FindMember("primitive");
+	if (prim_i == obj.end()) throw std::runtime_error("Cannot find a \"primitive\" member in mesh json");
+
+	auto& prim_v = prim_i->value;
+	if (!prim_v.IsString()) throw std::runtime_error("\"primitive\" member of mesh json is not a string");
+
+	primitive = primitiveFromString(prim_v.GetString());
 }
 
 
@@ -211,6 +219,21 @@ Mesh::Mesh(const std::string& path) {
 	vao = std::make_shared<VertexArray>();
 	vao->elementBuffer(ibo);
 	vao->vertexBuffer(vbo, attributes);
+
+	auto prim_i = obj.FindMember("primitive");
+	if (prim_i == obj.end()) throw std::runtime_error("Cannot find a \"primitive\" member in mesh json");
+
+	auto& prim_v = prim_i->value;
+	if (!prim_v.IsString()) throw std::runtime_error("\"primitive\" member of mesh json is not a string");
+
+	primitive = primitiveFromString(prim_v.GetString());
 }
 
 
+Mesh::Mesh(const std::shared_ptr<VertexBuffer>& vbo_, const std::shared_ptr<IndexBuffer>& ibo_, const std::shared_ptr<VertexArray>& vao_, PrimitiveMode primitive_) : vbo{ vbo_ }, ibo{ ibo_ }, vao{ vao_ }, primitive{ primitive_ } {
+}
+
+
+uint32_t Mesh::getIndicesToRender() {
+	return indexcount.value_or(ibo->getSize());
+}

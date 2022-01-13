@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Texture.h"
 
 Renderer::Renderer() {
 
@@ -48,10 +49,36 @@ void Renderer::setShader(const std::shared_ptr<ShaderProgram>& program) {
 }
 
 void Renderer::preRender() {
-    if (currentShaderProgram) {
-        currentShaderProgram->use();
-        currentShaderProgram->setFloat4("uColor", currentForegroundColor);
+    if (!currentShaderProgram) { return; }
+    currentShaderProgram->use();
+    currentShaderProgram->setFloat4("uColor", currentForegroundColor);
+
+    std::array<glm::uvec2, kMaximumTextures> texSizes;
+    std::array<int, kMaximumTextures> texs;
+    std::memset(texs.data(), 0, kMaximumTextures * sizeof(int));
+
+    for (uint32_t uid = 0; uid < kMaximumTextures; uid++) {
+        auto& tex = currentTextures[uid];
+        if (tex) {
+            tex->bind(uid);
+//            std::string ind = "[";
+//            ind += uid;
+//            ind += "]";
+//
+//            currentShaderProgram->setUInt2("uTextureSize" + ind, tex->getTextureSize());
+//            currentShaderProgram->setInt("uTexture" + ind, uid);
+            texSizes[uid] = tex->getTextureSize();
+            texs[uid] = uid;
+        }
     }
+
+    uint32_t utss_l = currentShaderProgram->getUniformLocation("uTextureSize");
+    uint32_t utxs_l = currentShaderProgram->getUniformLocation("uTexture");
+
+    uint32_t h = currentShaderProgram->getHandle();
+
+    glUniform2uiv(utss_l, kMaximumTextures, reinterpret_cast<uint32_t*>(texSizes.data()));
+    glUniform1iv(utxs_l, kMaximumTextures, texs.data());
 }
 
 void Renderer::queue(const RendererDraw& drawC) {
@@ -61,6 +88,8 @@ void Renderer::queue(const RendererDraw& drawC) {
 void Renderer::renderCall(const RendererDraw& drawC) {
     setShader(drawC.shader);
     setForegroundColor(drawC.foregroundColor);
+
+    currentTextures = drawC.textures;
 
 //    switch (drawC.drawData.renderMode) {
 //    case RendererMode::Arrays:
@@ -72,4 +101,18 @@ void Renderer::renderCall(const RendererDraw& drawC) {
 //    }
 
     drawMesh(drawC.mesh);
+}
+
+void Renderer::drawMesh(const std::shared_ptr<Mesh>& mesh) {
+    uint32_t count = mesh->getIndexBuffer()->getSize();
+    drawElements(mesh->getVertexArray(), mesh->getPrimitiveMode(), count);
+}
+
+void Renderer::setTexture(const std::shared_ptr<Texture>& tex, uint32_t unit) {
+    if (unit >= kMaximumTextures) {
+        spdlog::error("Cannot bind texture to unit {}. Maximum unit is {}", unit, kMaximumTextures);
+        return;
+    }
+
+    currentTextures[unit] = tex;
 }

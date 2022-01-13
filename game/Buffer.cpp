@@ -277,3 +277,7 @@ void VertexArray::vertexBuffer(std::shared_ptr<VertexBuffer>& vbo, std::vector<u
 void VertexArray::elementBuffer(std::shared_ptr<IndexBuffer>& ibo) {
     glVertexArrayElementBuffer(handle, ibo->getHandle());
 }
+
+void VertexArray::elementBuffer(uint32_t ibo) {
+    glVertexArrayElementBuffer(handle, ibo);
+}
