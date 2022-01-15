@@ -22,6 +22,7 @@ class ShaderProgram {
 public:
 
     ShaderProgram(std::initializer_list<std::string> files);
+    ShaderProgram(std::string json);
     ~ShaderProgram();
 
     inline static std::shared_ptr<ShaderProgram> create(std::initializer_list<std::string> files) { return std::make_shared<ShaderProgram>(files); };

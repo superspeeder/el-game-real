@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <glm/gtc/type_ptr.hpp>
+#include <filesystem>
 
 Shader::Shader(std::string file) {
 	std::string srcuf = lStripNewlines(readFile(file));
@@ -38,6 +39,7 @@ Shader::Shader(std::string file) {
 	}
 }
 
+
 Shader::~Shader() {
     glDeleteShader(handle);
 }
@@ -47,6 +49,54 @@ ShaderProgram::ShaderProgram(std::initializer_list<std::string> files) {
 	for (std::string p : files) {
 		shaders.push_back(std::make_shared<Shader>(p));
 	}
+	handle = glCreateProgram();
+	for (const auto& s : shaders) {
+		glAttachShader(handle, s->getHandle());
+	}
+
+	glLinkProgram(handle);
+	int i;
+	glGetProgramiv(handle, GL_LINK_STATUS, &i);
+	if (!i) {
+		glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &i);
+		char* ilog = new char[i];
+
+		glGetProgramInfoLog(handle, i, &i, ilog);
+		spdlog::critical(ilog);
+
+		delete[i] ilog;
+		spdlog::critical("Failed to link program");
+		throw std::runtime_error("Failed to link program");
+	}
+}
+
+
+ShaderProgram::ShaderProgram(std::string json) {
+	rapidjson::Document doc;
+
+	std::string text = readFile(json);
+	doc.Parse(text.c_str());
+
+	if (!doc.IsArray()) throw std::runtime_error("Failed to load shader collection '" + json + "'. JSON must be an array.");
+	auto arr = doc.GetArray();
+
+	std::vector<std::shared_ptr<Shader> > shaders;
+	for (const auto& v : arr) {
+		if (v.IsString()) {
+			std::string str = v.GetString();
+			std::filesystem::path p = str;
+			if (p.is_absolute()) {
+				shaders.push_back(std::make_shared<Shader>(p.string()));
+			}
+			else {
+				p = std::filesystem::current_path(); 
+				p /= std::filesystem::path(json).parent_path();
+				p /= str;
+				shaders.push_back(std::make_shared<Shader>(p.string()));
+			}
+		}
+	}
+
 	handle = glCreateProgram();
 	for (const auto& s : shaders) {
 		glAttachShader(handle, s->getHandle());

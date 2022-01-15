@@ -46,14 +46,13 @@ private:
 	int size;
 };
 
-
 class RenderableText {
 public:
-
 	RenderableText(Game* game, std::shared_ptr<Font> font, glm::vec3 color, std::string text);
 	~RenderableText();
 
-	
+	inline const std::shared_ptr<Texture>& getTexture() const noexcept { return renderedTextTex; };
+	inline glm::uvec2 getSize() const noexcept { return { width, height }; };
 
 private:
 	Game* game;

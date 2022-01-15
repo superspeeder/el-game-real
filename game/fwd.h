@@ -61,6 +61,9 @@ class FontFamily;
 class Font;
 class RenderableText;
 
+//-AssetManager.h
+class AssetManager;
+
 // Enums
 enum class PrimitiveMode : GLenum {
     Points = GL_POINTS,

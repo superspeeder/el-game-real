@@ -162,8 +162,7 @@ RenderableText::RenderableText(Game* game_, std::shared_ptr<Font> font, glm::vec
 
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
-
-
+    Framebuffer::bindDefault();
 }
 
 RenderableText::~RenderableText() {
