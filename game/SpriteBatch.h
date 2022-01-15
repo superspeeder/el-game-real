@@ -10,6 +10,7 @@ namespace spritebatch_constants {
 	constexpr uint32_t kMaxQuads = kMaxVertices / 4;
 	constexpr uint32_t kIndicesPerQuad = 6;
 	constexpr PrimitiveMode kPrimitiveMode = PrimitiveMode::Triangles;
+	constexpr float innerTMove = 0.00390625;
 }
 
 class SpriteBatch {

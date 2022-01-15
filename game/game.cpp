@@ -76,6 +76,7 @@ void Game::init() {
 	renderer->setBackgroundColor(colors::CYAN);
 
 	prog = ShaderProgram::create({ "shaders/main.frag.glsl", "shaders/main.vert.glsl" });
+	fontShader = ShaderProgram::create({ "shaders/font.frag.glsl", "shaders/font.vert.glsl" });
 
 	spriteBatch = std::make_shared<SpriteBatch>();
 
@@ -110,6 +111,10 @@ void Game::freecamUpdate() {
 	if (window->getKey(GLFW_KEY_S)) {
 		camera->move({ 0, -kFreeCameraSpeed });
 	}
+}
+
+std::shared_ptr<ShaderProgram> Game::getFontShader() {
+	return fontShader;
 }
 
 constexpr float ts = 16.f;

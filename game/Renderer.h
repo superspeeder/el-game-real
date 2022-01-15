@@ -22,6 +22,11 @@ struct RendererDraw {
     std::array<std::shared_ptr<Texture>, kMaximumTextures> textures;
 };
 
+struct SimpleTexturedQuad {
+    glm::vec2 pos, scale;
+    std::shared_ptr<Texture> tex;
+};
+
 
 class Renderer {
 public:

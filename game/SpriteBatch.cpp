@@ -80,19 +80,19 @@ void SpriteBatch::batch(glm::vec2 pos, glm::vec2 size, glm::vec4 texCoords, floa
 	std::array<float, kVertexSize * 4> qvs{
 		// v1
 		pos.x, pos.y, z,
-		texCoords.x + 0.0078125f, texCoords.y + 0.0078125f,
+		texCoords.x + innerTMove, texCoords.y + innerTMove,
 
 		// v2
 		pos.x + size.x, pos.y, z,
-		texCoords.x + texCoords.z - 0.0078125f, texCoords.y + 0.0078125f,
+		texCoords.x + texCoords.z - innerTMove, texCoords.y + innerTMove,
 
 		// v3
 		pos.x + size.x, pos.y + size.y, z,
-		texCoords.x + texCoords.z - 0.0078125f, texCoords.y + texCoords.w - 0.0078125f,
+		texCoords.x + texCoords.z - innerTMove, texCoords.y + texCoords.w - innerTMove,
 
 		// v4
 		pos.x, pos.y + size.y, z,
-		texCoords.x + 0.0078125f, texCoords.y + texCoords.w - 0.0078125f
+		texCoords.x + innerTMove, texCoords.y + texCoords.w - innerTMove
 	};
 
 	vbo->setRegion(curIndex, qvs);

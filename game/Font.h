@@ -37,6 +37,8 @@ public:
 	Font(std::shared_ptr<FontFamily> family, int size);
 	~Font();
 
+	inline const Glyph& operator[](char c) { return glyphs[c]; };
+
 private:
 	std::shared_ptr<FontFamily> family;
 	std::map<char, Glyph> glyphs;
@@ -44,11 +46,20 @@ private:
 	int size;
 };
 
+
 class RenderableText {
 public:
 
-	RenderableText(std::shared_ptr<Font> font, glm::vec3 color, std::strnig text);
+	RenderableText(Game* game, std::shared_ptr<Font> font, glm::vec3 color, std::string text);
+	~RenderableText();
+
+	
 
 private:
-
+	Game* game;
+	std::shared_ptr<Framebuffer> renderedText;
+	std::shared_ptr<Texture> renderedTextTex;
+	uint32_t width;
+	uint32_t height;
+	uint32_t baseline;
 };

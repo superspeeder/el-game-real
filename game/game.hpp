@@ -42,10 +42,12 @@ public:
 
 	void freecamUpdate();
 
+	std::shared_ptr<ShaderProgram> getFontShader();
+
 private:
 	std::shared_ptr<Window> window;
 	std::shared_ptr<Renderer> renderer;
-	std::shared_ptr<ShaderProgram> prog;
+	std::shared_ptr<ShaderProgram> prog, fontShader;
 	std::shared_ptr<Mesh> mesh;
 	std::shared_ptr<Texture> texture;
 	std::shared_ptr<SpriteBatch> spriteBatch;

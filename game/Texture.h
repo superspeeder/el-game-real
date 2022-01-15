@@ -26,6 +26,8 @@ public:
 
 	void bind(uint32_t unit);
 
+	inline uint32_t getHandle() const noexcept { return handle; };
+
 private:
 	uint32_t handle;
 	glm::uvec2 textureSize;
