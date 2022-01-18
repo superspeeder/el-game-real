@@ -108,7 +108,7 @@ void Renderer::renderCall(const RendererDraw& drawC) {
 }
 
 void Renderer::drawMesh(const std::shared_ptr<Mesh>& mesh) {
-    uint32_t count = mesh->getIndexBuffer()->getSize();
+    uint32_t count = mesh->getIndicesToRender();
     drawElements(mesh->getVertexArray(), mesh->getPrimitiveMode(), count);
 }
 

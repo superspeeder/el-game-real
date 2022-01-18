@@ -9,12 +9,14 @@
 #include "SpriteBatch.h"
 #include "Camera.h"
 #include "event.hpp"
+#include "Framebuffer.h"
 
 #include <iostream>
 
 
 namespace game_constants {
 	constexpr float kFreeCameraSpeed = 8.f;
+	constexpr glm::uvec2 kRenderResolution{ 1920, 1080 };
 }
 
 
@@ -47,13 +49,14 @@ public:
 private:
 	std::shared_ptr<Window> window;
 	std::shared_ptr<Renderer> renderer;
-	std::shared_ptr<ShaderProgram> prog, fontShader;
-	std::shared_ptr<Mesh> mesh;
-	std::shared_ptr<Texture> texture;
+	std::shared_ptr<ShaderProgram> prog, fontShader, screenShader;
+	std::shared_ptr<Mesh> mesh, screenMesh;
+	std::shared_ptr<Texture> texture, gameRenderFBOTex;
 	std::shared_ptr<SpriteBatch> spriteBatch;
 	std::shared_ptr<Camera> camera;
-	
-	RendererDraw drawF;
+	std::shared_ptr<Framebuffer> gameRenderFramebuffer;
+
+	RendererDraw drawF, screenDrawF;
 
 
 
@@ -64,10 +67,14 @@ private:
 	SimpleFunctionalGradient gradient{colorA, colorB, f};
 	std::shared_ptr<OnDemandEventManager> appEventManager;
 	std::shared_ptr<AsyncEventManager> eventManager;
+	std::mutex fbsize_mtx;
+	glm::ivec2 fbsize;
 
 	EventLayer* eventLayer;
 	EventLayer* appEventLayer;
 
 	CameraMode cameraMode = CameraMode::Freecam;
+
+	uint64_t frameCounter = 0;
 	
 };

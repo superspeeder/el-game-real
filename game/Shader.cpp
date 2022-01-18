@@ -94,6 +94,7 @@ ShaderProgram::ShaderProgram(std::string json) {
 				p /= str;
 				shaders.push_back(std::make_shared<Shader>(p.string()));
 			}
+			spdlog::debug("Loaded shader from \"{}\"", p.string());
 		}
 	}
 
